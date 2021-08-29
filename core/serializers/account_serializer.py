@@ -61,3 +61,22 @@ class AccountSerializer(serializers.ModelSerializer):
         )
 
         return account
+
+    def update(self, instance, validated_data) -> Account:
+        self.instance.username = self.validated_data['username']
+        self.instance.email = self.validated_data['email']
+        self.instance.bio = self.validated_data['bio']
+        self.instance.birth_date = self.validated_data['birth_date']
+        self.instance.profile_picture = self.validated_data['profile_picture']
+        self.instance.is_staff = self.validated_data['is_staff']
+        self.instance.is_superuser = self.validated_data['is_superuser']
+        password = self.validated_data['password']
+        password_confirm = self.validated_data['password_confirm']
+
+        if password != password_confirm:
+            raise ValidationError({'error': 'As senhas não são iguais'})
+
+        self.instance.set_password(password)
+        self.instance.save()
+
+        return self.isntance
