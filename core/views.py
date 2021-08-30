@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from .serializers.account_serializer import AccountSerializer
-from . serializers.post_serializer import PostSerializer
+from .serializers.post_serializer import PostSerializer
 from .models import Post
 
 Account = get_user_model()
@@ -33,7 +33,7 @@ class AccountViewSet(ModelViewSet):
 
         if serializer.is_valid():
             serializer.save()
-            return Response({'success': 'Conta criada com sucesso.'})
+            return Response(serializer.data)
         
         return Response(serializer.errors)
 
@@ -47,7 +47,7 @@ class AccountViewSet(ModelViewSet):
 
         if serializer.is_valid():
             serializer.save()
-            return Response({'success': 'Conta atualizada.'})
+            return Response(serializer.data)
             
         return Response(serializer.errors)
 
@@ -64,3 +64,51 @@ class AccountViewSet(ModelViewSet):
 class PostViewSet(ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+
+    def get_by_id(self, requet: HttpRequest, account_id: str) -> Response:
+        try:
+            post = Post.objects.get(id=account_id)
+        except Post.DoesNotExist:
+            return Response({'error': 'Postagem não encontrada.'})
+
+        serializer = PostSerializer(post)
+
+        return Response(serializer.data)
+
+    def get(self, request: HttpRequest) -> Response:
+        posts = Post.objects.all()
+        serializer = PostSerializer(posts, many=True)
+
+        return Response(serializer.data)
+    
+    def create(self, request: HttpRequest) -> Response:
+        serializer = PostSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        
+        return Response(serializer.errors)
+
+    def update(self, request: HttpRequest, account_id: str) -> Response:
+        try:
+            post = Post.objects.get(id=account_id)
+        except Post.DoesNotExist:
+            return Response({'error': 'Postagem não encontrada'})
+        
+        serializer = PostSerializer(post, request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        
+        return Response(serializer.errors)
+    
+    def destroy(self, request: HttpRequest, account_id: str) -> Response:
+        try:
+            post = Post.objects.get(id=account_id)
+        except Post.DoesNotExist:
+            return Response({'error': 'Postagem não encontrada.'})
+        
+        post.delete()
+        return Response({'success': 'Postagem deletada.'})

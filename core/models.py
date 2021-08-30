@@ -3,7 +3,10 @@ from uuid import uuid4
 from django.contrib.auth.models import AbstractUser
 
 def upload_profile_picture(instance, filename) -> str:
-    return f'{instance.id}_{filename}'
+    return f'profile_{instance.id}_{filename}'
+
+def upload_post_image(instance, filename) -> str:
+    return f'post_{instance.id}_{filename}'
 
 class Account(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
@@ -24,7 +27,7 @@ class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     title = models.CharField(max_length=100, null=False, blank=False)
     description = models.TextField(null=False, blank=False)
-    image = models.ImageField(null=True, blank=True)
+    image = models.ImageField(upload_to=upload_post_image, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, null=False, blank=False, editable=False)
     updated_at = models.DateTimeField(auto_now=True, null=False, blank=False)
     author = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='posts', null=False, blank=False)
