@@ -21,6 +21,7 @@ class AccountSerializer(serializers.ModelSerializer):
             'is_staff', 
             'is_superuser'
             ]
+        read_only_fields = ['posts']
         extra_kwargs = {'password': {'write_only': True}}
 
     password = serializers.CharField(
@@ -35,7 +36,7 @@ class AccountSerializer(serializers.ModelSerializer):
         label='Confirme sua senha'
     )         
 
-    def create(self, validated_data) -> Account:
+    def create(self, validated_data: dict) -> Account:
         username = self.validated_data['username']
         email = self.validated_data['email']
         bio = self.validated_data['bio']
@@ -62,7 +63,7 @@ class AccountSerializer(serializers.ModelSerializer):
 
         return account
 
-    def update(self, instance, validated_data) -> Account:
+    def update(self, instance: Account, validated_data: dict) -> Account:
         self.instance.username = self.validated_data['username']
         self.instance.email = self.validated_data['email']
         self.instance.bio = self.validated_data['bio']
@@ -79,4 +80,4 @@ class AccountSerializer(serializers.ModelSerializer):
         self.instance.set_password(password)
         self.instance.save()
 
-        return self.isntance
+        return self.instance

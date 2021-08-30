@@ -2,19 +2,23 @@ from django.db import models
 from uuid import uuid4
 from django.contrib.auth.models import AbstractUser
 
+def upload_profile_picture(instance, filename) -> str:
+    return f'{instance.id}_{filename}'
+
 class Account(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     username = models.CharField(max_length=100, unique=True, null=False, blank=False)
     email = models.EmailField(max_length=100, unique=True, null=False, blank=False)
     bio = models.TextField(max_length=150, null=True, blank=True)
     birth_date = models.DateField(blank=False, null=False)
-    profile_picture = models.ImageField(null=True, blank=True)
+    profile_picture = models.ImageField(upload_to=upload_profile_picture, null=True, blank=True)
 
     class Meta:
         db_table = 'accounts'
     
     def __str__(self) -> str:
         return self.username
+    
 
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
