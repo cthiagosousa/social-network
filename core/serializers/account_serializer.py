@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
-from django.db.models import fields
 from rest_framework import serializers
 
 Account = get_user_model()

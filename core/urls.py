@@ -1,13 +1,11 @@
-from rest_framework.urlpatterns import format_suffix_patterns
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from .views import AccountViewSet, PostViewSet
 
-urlpatterns = [
-    path('account/', AccountViewSet.as_view({'get': 'get', 'post': 'create'})),
-    path('account/<str:account_id>', AccountViewSet.as_view({'get': 'get_by_id', 'put': 'update', 'delete': 'destroy'})),
-    
-    path('posts/', PostViewSet.as_view({'get': 'get', 'post': 'create'})),
-    path('posts/<str:account_id>', PostViewSet.as_view({'get': 'get_by_id', 'put': 'update', 'delete': 'destroy'}))
-]
+router = DefaultRouter()
+router.register('account', AccountViewSet, basename='account')
+router.register('posts', PostViewSet, basename='posts')
 
-urlpatterns = format_suffix_patterns(urlpatterns)
+urlpatterns = [
+    path('', include(router.urls))
+]
